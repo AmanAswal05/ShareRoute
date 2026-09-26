@@ -1,4 +1,8 @@
 "use client";
+import { SellerNetworkDashboard } from "@/components/SellerNetworkDashboard";
+/* eslint-disable react-hooks/purity */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ActiveDemoDelivery } from "@/components/ActiveDemoDelivery";
 
 import { useState } from "react";
 import { useDemoStore, Delivery } from "@/store/demoStore";
@@ -98,81 +102,10 @@ export default function SellerDashboard() {
   );
 }
 
+
+
 function OverviewTab({ onNavigate }: { onNavigate: (tab: string) => void }) {
-  const { deliveries } = useDemoStore();
-  const sellerDeliveries = deliveries.filter((d) => d.sellerId === "s1"); // Sweet Home Bakery
-  const activeCount = sellerDeliveries.filter((d) => !["delivered", "requested"].includes(d.status)).length;
-  const completedCount = sellerDeliveries.filter((d) => d.status === "delivered").length;
-  const todayCount = sellerDeliveries.length;
-  const estimatedSpend = sellerDeliveries.reduce((acc, curr) => acc + (curr.estimatedFee || 0), 0);
-
-  return (
-    <div className="space-y-8">
-      {/* Welcome Banner */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-transparent p-6 rounded-3xl border border-blue-500/20 backdrop-blur-xl shadow-lg">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Welcome, Sweet Home Bakery</h1>
-            <Badge variant="live" className="text-[10px]">LIVE</Badge>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Shared dispatch telemetry is active. 3 delivery riders currently orbiting your pickup zone.
-          </p>
-        </div>
-        <Button variant="glow" onClick={() => onNavigate("create")} className="gap-2 shrink-0">
-          <PlusCircle className="w-4 h-4" /> Create Dispatch Order
-        </Button>
-      </div>
-
-      {/* Metrics Row with CountUp */}
-      <StaggerContainer className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StaggerItem>
-          <MetricCard
-            title="Total Dispatches"
-            value={<CountUp value={todayCount} />}
-            icon={<Package className="w-5 h-5 text-blue-500" />}
-            subtitle="Today's volume"
-          />
-        </StaggerItem>
-        <StaggerItem>
-          <MetricCard
-            title="Active in Mesh"
-            value={<CountUp value={activeCount} />}
-            icon={<Truck className="w-5 h-5 text-amber-500" />}
-            subtitle="En route & matching"
-            highlight={activeCount > 0}
-          />
-        </StaggerItem>
-        <StaggerItem>
-          <MetricCard
-            title="Fulfilled Deliveries"
-            value={<CountUp value={completedCount} />}
-            icon={<CheckCircle className="w-5 h-5 text-emerald-500" />}
-            subtitle="100% on-time rate"
-          />
-        </StaggerItem>
-        <StaggerItem>
-          <MetricCard
-            title="Estimated Spend"
-            value={<CountUp value={estimatedSpend} prefix="₹" />}
-            icon={<IndianRupee className="w-5 h-5 text-purple-500" />}
-            subtitle="~42% saved via shared routes"
-          />
-        </StaggerItem>
-      </StaggerContainer>
-
-      {/* Recent Dispatches Section */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-xl font-bold text-foreground">Active Deliveries</h3>
-          <Button variant="ghost" size="sm" onClick={() => onNavigate("orders")}>
-            View All History →
-          </Button>
-        </div>
-        <OrdersTab filterActive />
-      </div>
-    </div>
-  );
+  return <SellerNetworkDashboard />;
 }
 
 function MetricCard({
@@ -217,7 +150,7 @@ function CreateDeliveryTab({ onNavigate }: { onNavigate: (tab: string) => void }
   const [sharedRouteOpt, setSharedRouteOpt] = useState<any>(null);
 
   const [formData, setFormData] = useState({
-    orderId: "SR" + Math.floor(1000 + Math.random() * 9000),
+    orderId: "SR-" + Math.floor(1000 + Math.random() * 9000),
     packageSize: "Medium",
     pickupArea: "Kharghar",
     destinationArea: "Vashi",

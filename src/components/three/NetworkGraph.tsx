@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 "use client";
 
 import { useRef, useMemo, useEffect } from "react";
@@ -15,7 +16,7 @@ if (typeof window !== "undefined") {
 // Interactive moving carrier packet between nodes
 function MovingPacket({ start, end, color = "#60a5fa", speed = 1 }: { start: THREE.Vector3; end: THREE.Vector3; color?: string; speed?: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const progressRef = useRef(Math.random());
+  const progressRef = useRef(0); useEffect(() => { progressRef.current = Math.random(); }, []);
 
   useFrame((_, delta) => {
     progressRef.current = (progressRef.current + delta * 0.4 * speed) % 1;

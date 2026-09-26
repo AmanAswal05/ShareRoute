@@ -36,9 +36,19 @@ export interface Delivery {
   estimatedFee?: number;
   estimatedTime?: number;
   createdAt: number;
+  progress?: number;
+  routeOverlap?: number;
+  originalFee?: number;
+  co2Saved?: number;
+  customerName?: string;
+  weight?: string;
+  packageDetails?: string;
 }
 
 export interface SharedRoute {
+  overlap?: number;
+  totalSavings?: number;
+  riderId?: string;
   id: string;
   name: string;
   deliveryIds: string[];
@@ -64,6 +74,7 @@ interface DemoState {
   resetDemo: () => void;
   addDelivery: (delivery: Delivery) => void;
   updateDeliveryStatus: (id: string, status: DeliveryStatus, riderId?: string) => void;
+  updateDeliveryData: (id: string, data: Partial<Delivery>) => void;
   updateRiderStatus: (id: string, status: Rider['status']) => void;
   addNotification: (message: string) => void;
   addSharedRoute: (route: SharedRoute) => void;
@@ -79,37 +90,27 @@ const initialSellers: Seller[] = [
   { id: "s5", name: "Bloom Box", category: "Gifts", area: "Belapur" },
 ];
 
-const initialRiders: Rider[] = [
-  { id: "r1", name: "Rahul", status: "available", area: "Kharghar" },
-  { id: "r2", name: "Arjun", status: "busy", area: "Vashi" },
-  { id: "r3", name: "Neha", status: "available", area: "Nerul" },
-  { id: "r4", name: "Sameer", status: "offline", area: "Sanpada" },
-  { id: "r5", name: "Priya", status: "available", area: "Belapur" },
-];
+import { initialRiders, initialDeliveries, initialRouteGroups } from "@/data/demoData";
 
-// Seed some initial deliveries for the demo to look realistic initially
-const initialDeliveries: Delivery[] = [
-  { id: "SR1001", sellerId: "s2", pickupArea: "Vashi", destinationArea: "Nerul", packageSize: "Small", priority: "Standard", status: "delivered", riderId: "r2", estimatedFee: 40, estimatedTime: 15, createdAt: Date.now() - 3600000 },
-  { id: "SR1002", sellerId: "s4", pickupArea: "Sanpada", destinationArea: "Vashi", packageSize: "Medium", priority: "Priority", status: "inTransit", riderId: "r2", estimatedFee: 65, estimatedTime: 20, createdAt: Date.now() - 1800000 },
-];
+// const initialDeliveries: Delivery[] = [];
 
 export const useDemoStore = create<DemoState>()(
   persist(
     (set) => ({
       isDemoMode: true,
       sellers: initialSellers,
-      riders: initialRiders,
-      deliveries: initialDeliveries,
-      sharedRoutes: [],
+      riders: initialRiders as any,
+      deliveries: initialDeliveries as any,
+      sharedRoutes: initialRouteGroups as any,
       notifications: [],
 
       toggleDemoMode: () => set((state) => ({ isDemoMode: !state.isDemoMode })),
       
       resetDemo: () => set({
         sellers: initialSellers,
-        riders: initialRiders,
-        deliveries: initialDeliveries,
-        sharedRoutes: [],
+        riders: initialRiders as any,
+        deliveries: initialDeliveries as any,
+        sharedRoutes: initialRouteGroups as any,
         notifications: [],
         isDemoMode: true
       }),
@@ -118,6 +119,7 @@ export const useDemoStore = create<DemoState>()(
         deliveries: [delivery, ...state.deliveries]
       })),
 
+      updateDeliveryData: (id, data) => set((state) => ({ deliveries: state.deliveries.map(d => d.id === id ? { ...d, ...data } : d) })),
       updateDeliveryStatus: (id, status, riderId) => set((state) => ({
         deliveries: state.deliveries.map(d => 
           d.id === id ? { ...d, status, ...(riderId ? { riderId } : {}) } : d
